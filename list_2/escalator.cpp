@@ -17,50 +17,56 @@ int main() {
         scanf("%d %d", &a, &d);
         arrive[i] = a;
         direction[i] = d;
+    }
 
-        if(d == 0) {
-            if (last_left != -1) {
-                if (arrive[last_left] + 10 >= a) {
-                    arrive[i] = arrive[last_left+1];
-                    direction[i] = direction[last_left+1];
-                    arrive[last_left+1] = a;
-                    direction[last_left+1] = d;
+    int time[n] = {};
+
+    for (int i = 0; i < n; i++) {
+        int now = arrive[i];
+        if (i != 0) {
+            if (direction[i-1] != direction[i]) {
+                if (time[i-1] > arrive[i]) {
+                    time[i] = time[i-1]+10;
+                } else {
+                    time[i] = arrive[i] + 10;
+                }
+            } else {
+                if (time[i-1] > arrive[i]+10) {
+                    time[i] = time[i-1];
+                } else {
+                    time[i] = arrive[i] + 10;
                 }
             }
-            last_left = i;
         } else {
-            if (last_right != -1) {
-                if (arrive[last_right] + 10 >= a) {
-                    arrive[i] = arrive[last_right+1];
-                    direction[i] = direction[last_right+1];
-                    arrive[last_right+1] = a;
-                    direction[last_right+1] = d;
+            time[i] = arrive[i]+10;
+        }
+        if (i+2 < n) {
+            if (direction[i] != direction[i+1]) {
+                int look_forward = i+2;
+                while (look_forward < n) {
+                    if (direction[i] == direction[look_forward]) {
+                        
+                        if (time[i] > arrive[look_forward]) {
+                            int a, d, t;
+                            a = arrive[i+1];
+                            d = direction[i+1];
+                            t = time[i+1];
+                            arrive[i+1] = arrive[look_forward];
+                            direction[i+1] = direction[look_forward];
+                            time[i+1] = time[look_forward];
+                            arrive[look_forward] = a;
+                            direction[look_forward] = d;
+                            time[look_forward] = t;
+                        }
+                        break;
+                    }
+                    look_forward++;
                 }
             }
-
-            last_right = i;
         }
     }
 
-    int time = 0;
-
-    int first_direction = direction[0];
-    int current_direction = first_direction;
-    int x = 0;
-    while(x < n -1) {
-        while (current_direction == first_direction && x < n -1) {
-            x++;
-            current_direction = direction[x];
-        }
-
-        time += arrive[x] + 10;
-
-        if(x < n) {
-            first_direction = direction[x];
-        }
-    }
-
-    cout << time << '\n';
+    cout << time[n-1] << '\n';
     
     return 0;
 }
